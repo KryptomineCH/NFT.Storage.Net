@@ -9,7 +9,7 @@ namespace NFT.Storage.Net
     public class NFT_File
     {
         public string Name { get; set; }
-        public string URL { get; set; }
+        public Uri URL { get; set; }
         public string Sha256Sum { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace NFT.Storage.Net
         {
             _Client = new HttpClient();
             _Client.BaseAddress = new Uri(url);
-            _Client.DefaultRequestHeaders.Add("api-key", apiKey);
+            _Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
             _NFTClient = new Client.NFTStorageClient(_Client);
         }
         private HttpClient _Client;
