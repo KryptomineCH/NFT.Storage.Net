@@ -23,11 +23,10 @@ public class UploadTests
 ![image](https://user-images.githubusercontent.com/117320700/203652251-68b6fdd9-ed73-4e2d-82d4-c2542629ecd6.png)
 
 
-## supports
+## supported filetypes
 - stream data
 - locally stored files
 - files up to 100 mb
-- image files verified for now (other filetypes not tested)
 
 ## features
 - upload image to nft.storage
