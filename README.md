@@ -5,26 +5,21 @@ c# library to easily upload files to NFT.Storage.
 ![image](https://user-images.githubusercontent.com/117320700/203649841-7abd43d6-4c4a-44be-abdc-ddf5ae5ecc0e.png)
 ## Usage:
 ```
-public class UploadTests
-{
-    [Fact]
-    public void TestUploadRandomImage()
-    {   
-        // can upload local files from disk right now
-        GUID_Image.GenerateGuidImage("Testfile1.png");
-        // create api
-        NFT_Storage_API api = new NFT_Storage_API(GlobalVar.TestApiKey);
-        
-        
-        NFT_File file = api.Upload("Testfile1.png").Result;
-        string url = file.URL;
-        { }
-    }
+public void TestUploadRandomImage()
+{   
+    // can upload local files from disk right now
+    GUID_Image.GenerateGuidImage("Testfile1.png");
+    // create api
+    NFT_Storage_API api = new NFT_Storage_API(GlobalVar.TestApiKey);
+    
+    
+    NFT_File file = api.Upload("Testfile1.png").Result;
+    string url = file.URL;
+    string checksum = file.Sha256Sum;
 }
 ```
 -> returns a simplified c# object file
-![image](https://user-images.githubusercontent.com/117320700/203652251-68b6fdd9-ed73-4e2d-82d4-c2542629ecd6.png)
-
+![image](https://user-images.githubusercontent.com/117320700/203665613-a43fc570-b51b-497a-a859-eb62c7be4e30.png)
 
 ## supported filetypes
 - stream data
