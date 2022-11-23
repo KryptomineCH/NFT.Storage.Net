@@ -16,6 +16,6 @@ namespace NFT.Storage.Net
             }
         }
         public string Status { get; set; }
-        public string Sha256Sum { get; set; }
+        public string Sha256Sum { get { throw new NotImplementedException(); } set { } }
     }
 }

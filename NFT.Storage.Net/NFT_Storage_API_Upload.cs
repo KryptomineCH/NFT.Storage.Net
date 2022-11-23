@@ -60,35 +60,48 @@ namespace NFT.Storage.Net
         {
             return Upload(new FileInfo(localPath)).Result;
         }
+        public async Task<NFT_File> Upload(FileInfo localFile)
+        {
+            if (!localFile.Exists)
+                throw new FileNotFoundException($"File not found! {localFile.FullName}");
+            using (Stream fs = localFile.OpenRead())
+            {
+                NFT_File file = Upload(fs).Result;
+                file.Name = localFile.Name;
+                return file;
+            }
+            throw new Exception("failed to openread the file");
+        }
         /// <summary>
         /// Uploads a local file to NFT.Storage and returns a NFT_File object
         /// </summary>
-        /// <param name="fileInfo"></param>
+        /// <param name="inputStream"></param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="NotImplementedException">Files larger 100mb not supported by this library</exception>
-        public async Task<NFT_File> Upload(FileInfo fileInfo)
+        public async Task<NFT_File> Upload(Stream inputStream)
         {
-            // prechecks
-            if (!fileInfo.Exists)
-                throw new FileNotFoundException($"Local File could not be found! {fileInfo.FullName}");
-            if (fileInfo.Length * 0.000001 > 100)
+            if (inputStream.Length * 0.000001 > 100)
                 throw new NotImplementedException("Files > 100 mb are not yet supported by this Library!");
             // rate limiter
             AwaitRateLimit();
             using (var multipartFormContent = new MultipartFormDataContent())
             {
+                HttpResponseMessage response;
                 //Load the file and set the file's Content-Type header
-                var fileStreamContent = new StreamContent(fileInfo.OpenRead());
-                fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
-                //Send it
-                var response = await _Client.PostAsync("upload/", fileStreamContent);
+                using (StreamContent fileStreamContent = new StreamContent(inputStream))
+                {
+                    fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                    //Send it
+                    response = await _Client.PostAsync("upload/", fileStreamContent);
+                }
                 response.EnsureSuccessStatusCode();
+                // deserialize
                 string responseJson = await response.Content.ReadAsStringAsync();
-                fileStreamContent.Dispose();
                 ClientResponse.Response decodedResponse = JsonSerializer.Deserialize<ClientResponse.Response>(responseJson);
+                // build return file
                 NFT_File uploadedFile = new NFT_File();
-                uploadedFile.Name = fileInfo.Name;
+                uploadedFile.Name = decodedResponse.value.name;
                 uploadedFile.Status = decodedResponse.value.pin.status;
                 uploadedFile.Cid = decodedResponse.value.cid;
                 return uploadedFile;
