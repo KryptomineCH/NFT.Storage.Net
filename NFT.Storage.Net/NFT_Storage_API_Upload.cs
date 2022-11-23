@@ -56,18 +56,32 @@ namespace NFT.Storage.Net
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
         /// <exception cref="NotImplementedException">Files larger 100mb not supported by this library</exception>
+        /// <exception cref="InvalidDataException">checksum invalid! Upload failed</exception>
         public async Task<NFT_File> Upload(string localPath)
         {
             return Upload(new FileInfo(localPath)).Result;
         }
+        /// <summary>
+        /// Uploads a local file to NFT.Storage and returns a NFT_File object
+        /// </summary>
+        /// <param name="localPath"></param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="NotImplementedException">Files larger 100mb not supported by this library</exception>
+        /// <exception cref="InvalidDataException">checksum invalid! Upload failed</exception>
         public async Task<NFT_File> Upload(FileInfo localFile)
         {
             if (!localFile.Exists)
                 throw new FileNotFoundException($"File not found! {localFile.FullName}");
+            string checksum = Sha256.GetSha256Sum(localFile);
             using (Stream fs = localFile.OpenRead())
             {
                 NFT_File file = Upload(fs).Result;
                 file.Name = localFile.Name;
+                if (checksum != file.Sha256Sum)
+                {
+                    throw new InvalidDataException("checksum invalid!");
+                }
                 return file;
             }
             throw new Exception("failed to openread the file");
@@ -104,6 +118,7 @@ namespace NFT.Storage.Net
                 uploadedFile.Name = decodedResponse.value.name;
                 uploadedFile.Status = decodedResponse.value.pin.status;
                 uploadedFile.Cid = decodedResponse.value.cid;
+                uploadedFile.CalculateChecksum();
                 return uploadedFile;
             }
             throw new NotImplementedException();

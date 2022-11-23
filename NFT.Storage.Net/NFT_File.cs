@@ -12,10 +12,15 @@ namespace NFT.Storage.Net
         public string Cid { get; set; }
         public string URL { get
             {
-                return Cid+ ".ipfs.nftstorage.link";
+                return "https://"+Cid+ ".ipfs.nftstorage.link/";
             }
         }
         public string Status { get; set; }
-        public string Sha256Sum { get { throw new NotImplementedException(); } set { } }
+        public string Sha256Sum { get; private set; }
+        public void CalculateChecksum()
+        {
+            byte[] response = new System.Net.WebClient().DownloadData(URL);
+            Sha256Sum = Sha256.GetSha256Sum(response);
+        }
     }
 }
