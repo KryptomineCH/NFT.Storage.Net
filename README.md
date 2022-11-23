@@ -26,5 +26,8 @@ public class UploadTests
 - files up to 100 mb
 - image files verified for now
 - async / multithreading
+- unit tests
+- api key
 
+## loads files directly into your account and returns a readable .net object
 ![image](https://user-images.githubusercontent.com/117320700/203649841-7abd43d6-4c4a-44be-abdc-ddf5ae5ecc0e.png)
