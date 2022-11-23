@@ -27,7 +27,11 @@ public class UploadTests
 - stream data
 - locally stored files
 - files up to 100 mb
-- image files verified for now
+- image files verified for now (other filetypes not tested)
+
+## features
+- upload image to nft.storage
+- validate and show sha256sum
 - async / multithreading
 - unit tests
 - api key
