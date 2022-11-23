@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 
 namespace NFT.Storage.Net.UnitTests
 {
     internal class GUID_Image
     {
-        internal static void GenerateGuidImage(string path)
+        internal static void GenerateGuidImage(string path, bool overwrite = true)
         {
             Bitmap bitmap = GenerateGuidImage();
+            if (overwrite)
+            {
+                if (File.Exists(path)) File.Delete(path);
+            }
             bitmap.Save(path);
         }
             internal static Bitmap GenerateGuidImage()
@@ -18,11 +23,12 @@ namespace NFT.Storage.Net.UnitTests
             List<Color> pixles = new List<Color>();
             for (int i = 0; i < bytes.Length; i+=4)
             {
-                Color c1 = Color.FromArgb(
+                Color color = Color.FromArgb(
                 alpha: Convert.ToInt32(bytes[i]),
                 red: Convert.ToInt32(bytes[i+1]),
                 green: Convert.ToInt32(bytes[i+2]),
                 blue: Convert.ToInt32(bytes[i+3]));
+                pixles.Add(color);
             }
             Bitmap bmp = new Bitmap(2,2);
             bmp.SetPixel(0, 0, pixles[0]);

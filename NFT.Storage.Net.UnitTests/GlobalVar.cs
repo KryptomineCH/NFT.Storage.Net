@@ -4,9 +4,9 @@ using System.IO;
 
 namespace NFT.Storage.Net.UnitTests
 {
-    internal class GlobalVar
+    internal static class GlobalVar
     {
-        public GlobalVar()
+        static GlobalVar()
         {
             TestApiKey = File.ReadAllText("ApiKey.txt");
         }
