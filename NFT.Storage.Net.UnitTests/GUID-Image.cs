@@ -16,7 +16,37 @@ namespace NFT.Storage.Net.UnitTests
             }
             bitmap.Save(path);
         }
-            internal static Bitmap GenerateGuidImage()
+        internal static Bitmap BrandImage(Bitmap image)
+        {
+            Bitmap uuid = GenerateGuidImage();
+            Bitmap result = (Bitmap) image.Clone();
+            result.SetPixel(0, 0, uuid.GetPixel(0, 0));
+            result.SetPixel(0, 1, uuid.GetPixel(0, 1));
+            result.SetPixel(1, 0, uuid.GetPixel(1, 0));
+            result.SetPixel(1, 1, uuid.GetPixel(1, 1));
+            return result;
+        }
+        internal static Bitmap LargeImage()
+        {
+            Bitmap uuid = GenerateGuidImage();
+            int scale = 1000;
+            Bitmap result = new Bitmap(scale, scale);
+            Random random = new Random();
+            for (int width = 0; width < scale; width++)
+            {
+                for (int height = 0; height < scale; height++)
+                {
+                    Color randomColor = Color.FromArgb(255,random.Next(255), random.Next(255), random.Next(255));
+                    result.SetPixel(width, height, randomColor);
+                }
+            }
+            result.SetPixel(0, 0, uuid.GetPixel(0, 0));
+            result.SetPixel(0, 1, uuid.GetPixel(0, 1));
+            result.SetPixel(1, 0, uuid.GetPixel(1, 0));
+            result.SetPixel(1, 1, uuid.GetPixel(1, 1));
+            return result;
+        }
+        internal static Bitmap GenerateGuidImage()
         {
             Guid myuuid = Guid.NewGuid();
             byte[] bytes = myuuid.ToByteArray();

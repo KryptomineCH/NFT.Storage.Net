@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Text.Json;
 
-namespace NFT.Storage.Net
+namespace NFT.Storage.Net.API
 {
     public partial class NFT_Storage_API
     {
+        public bool UploadThrotteled { get; set;}
         /// <summary>
         /// this list is used to store th request times of the last 10 seconds (maximum 10 uploads per 10 seconds per api key)
         /// </summary>
@@ -31,22 +26,27 @@ namespace NFT.Storage.Net
                     DateTime requestTime;
                     if (UploadRateLimitList.TryPeek(out requestTime))
                     {
-                        if (requestTime < DateTime.Now.AddSeconds(-10)) UploadRateLimitList.Dequeue();
+                        if (requestTime < DateTime.Now - GlobalVar.RateLimit_BacklogTimeSpan)
+                        {
+                            UploadRateLimitList.Dequeue();
+                        }
                         else break;
                     }
                 }
                 // check if a rate limit applies
-                if (UploadRateLimitList.Count >= 10)
+                if (UploadRateLimitList.Count >= GlobalVar.RateLimit_MaxRequests)
                 {
                     // calculate sleep time
                     DateTime requestTime;
                     if (UploadRateLimitList.TryPeek(out requestTime))
                     {
-                        TimeSpan sleep = requestTime - DateTime.Now.AddSeconds(-10);
+                        TimeSpan sleep = requestTime - (DateTime.Now - GlobalVar.RateLimit_BacklogTimeSpan);
+                        UploadThrotteled = true;
                         Task.Delay(sleep).Wait();
                     }
                 }
                 UploadRateLimitList.Enqueue(DateTime.Now);
+                UploadThrotteled = false;
             }
         }
         /// <summary>
@@ -95,33 +95,28 @@ namespace NFT.Storage.Net
         /// <exception cref="NotImplementedException">Files larger 100mb not supported by this library</exception>
         public async Task<NFT_File> Upload(Stream inputStream)
         {
-            if (inputStream.Length * 0.000001 > 100)
+            if (inputStream.Length * 0.000001 > GlobalVar.MaxUploadSize_MB)
                 throw new NotImplementedException("Files > 100 mb are not yet supported by this Library!");
             // rate limiter
             AwaitRateLimit();
-            using (var multipartFormContent = new MultipartFormDataContent())
+            HttpResponseMessage response;
+            //Load the file and set the file's Content-Type header
+            using (StreamContent fileStreamContent = new StreamContent(inputStream))
             {
-                HttpResponseMessage response;
-                //Load the file and set the file's Content-Type header
-                using (StreamContent fileStreamContent = new StreamContent(inputStream))
-                {
-                    fileStreamContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
-                    //Send it
-                    response = await _Client.PostAsync("upload/", fileStreamContent);
-                }
-                response.EnsureSuccessStatusCode();
-                // deserialize
-                string responseJson = await response.Content.ReadAsStringAsync();
-                ClientResponse.Response decodedResponse = JsonSerializer.Deserialize<ClientResponse.Response>(responseJson);
-                // build return file
-                NFT_File uploadedFile = new NFT_File();
-                uploadedFile.Name = decodedResponse.value.name;
-                uploadedFile.Status = decodedResponse.value.pin.status;
-                uploadedFile.Cid = decodedResponse.value.cid;
-                uploadedFile.CalculateChecksum();
-                return uploadedFile;
+                //Send it
+                response = await _Client.PostAsync("upload/", fileStreamContent);
             }
-            throw new NotImplementedException();
+            response.EnsureSuccessStatusCode();
+            // deserialize
+            string responseJson = await response.Content.ReadAsStringAsync();
+            ClientResponse.Response decodedResponse = JsonSerializer.Deserialize<ClientResponse.Response>(responseJson);
+            // build return file
+            NFT_File uploadedFile = new NFT_File(bulkUpload: false);
+            uploadedFile.Name = decodedResponse.value.name;
+            uploadedFile.Status = decodedResponse.value.pin.status;
+            uploadedFile.Cid = decodedResponse.value.cid;
+            uploadedFile.CalculateChecksum();
+            return uploadedFile;
         }
     }
 }

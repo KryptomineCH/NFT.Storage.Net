@@ -1,18 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NFT.Storage.Net
+﻿namespace NFT.Storage.Net
 {
     public class NFT_File
     {
+        public NFT_File(bool bulkUpload)
+        {
+            BulkUpload = bulkUpload;
+        }
+        public bool BulkUpload { get; set; }
         public string Name { get; set; }
         public string Cid { get; set; }
         public string URL { get
             {
-                return "https://"+Cid+ ".ipfs.nftstorage.link/";
+                if (!BulkUpload)
+                {
+                    return $"https://{Cid}.ipfs.nftstorage.link/";
+                }
+                else
+                {
+                    return $"https://{Cid}.ipfs.nftstorage.link/{Name}";
+                }
             }
         }
         public string Status { get; set; }
