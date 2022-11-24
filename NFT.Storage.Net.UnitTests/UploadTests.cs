@@ -29,7 +29,7 @@ namespace NFT.Storage.Net.UnitTests
                 files.Add(new FileInfo($"/temp/TestBulkUpload{i}.png"));
             }
             
-            NFT_File[] nft_files = api.UploadMultipe(files.ToArray()).Result;
+            NFT_File[] nft_files = api.UploadMultiple(files.ToArray()).Result;
             { }
         }
         [Fact]
