@@ -1,5 +1,4 @@
-﻿
-namespace NFT.Storage.Net.API
+﻿namespace NFT.Storage.Net.API
 {
     public partial class NFT_Storage_API
     {
