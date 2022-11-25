@@ -39,7 +39,7 @@ namespace NFT.Storage.Net.API
                 ClientResponse.Response decodedResponse = JsonSerializer.Deserialize<ClientResponse.Response>(responseJson);
                 // build return file
                 List<NFT_File> uploadedFiles = new List<NFT_File>();
-                SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(10);
+                SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(40);
                 ConcurrentQueue<Task> Sha256Tasks = new ConcurrentQueue<Task>();
                 for (int fileIndex = 0; fileIndex < decodedResponse.value.files.Length; fileIndex++)
                 {
@@ -55,19 +55,23 @@ namespace NFT.Storage.Net.API
                             {
                                 await uploadedFile.CalculateChecksum();
                             }
+                            catch (Exception ex)
+                            {
+                                { }
+                            }
                             finally
                             {
                                 downloadConcurrencySemaphore.Release();
                             }
                         });
                         Sha256Tasks.Enqueue(t);
+                        string localChecksum = Sha256.GetSha256Sum(inputFiles[fileIndex]);
+                        if (localChecksum != uploadedFile.Sha256Sum)
+                        {
+                            throw new InvalidDataException("local checksum and checksum of uploaded File do not match!");
+                        }
                     }
                     uploadedFile.LocalFile = inputFiles[fileIndex];
-                    string localChecksum = Sha256.GetSha256Sum(inputFiles[fileIndex]);
-                    if (localChecksum != uploadedFile.Sha256Sum)
-                    {
-                        throw new InvalidDataException("local checksum and checksum of uploaded File do not match!");
-                    }
                     uploadedFiles.Add(uploadedFile);
                 }
                 Task.WaitAll(Sha256Tasks.ToArray());

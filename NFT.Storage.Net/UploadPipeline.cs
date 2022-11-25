@@ -92,12 +92,13 @@ namespace NFT.Storage.Net
                     Task.Delay(50).Wait();
                 }
             }
+            { }
         }
         public void StartUploads()
         {
             UploadTasks.Enqueue(Task.Run(async () => UploadTask()));
         }
-        SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(10);
+        SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(40);
         /// <summary>
         /// Normally this is executed automatically if adding files (except you specify differently)
         /// </summary>
@@ -131,10 +132,14 @@ namespace NFT.Storage.Net
                         UploadedFiles.Enqueue(file);
                         var t = Task.Run(async () =>
                         {
-                            downloadConcurrencySemaphore.Wait();
+                            await downloadConcurrencySemaphore.WaitAsync();
                             try
                             {
                                 await file.CalculateChecksum();
+                            }
+                            catch (Exception ex)
+                            {
+                                { }
                             }
                             finally
                             {

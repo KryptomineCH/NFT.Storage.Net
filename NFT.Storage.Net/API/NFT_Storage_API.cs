@@ -1,4 +1,6 @@
-﻿namespace NFT.Storage.Net.API
+﻿using System.Net;
+
+namespace NFT.Storage.Net.API
 {
     public partial class NFT_Storage_API
     {
@@ -12,6 +14,7 @@
             _Client.BaseAddress = new Uri(url);
             _Client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
             UploadThrotteled = false;
+            ServicePointManager.DefaultConnectionLimit = 40;
         }
         private HttpClient _Client;
     }
