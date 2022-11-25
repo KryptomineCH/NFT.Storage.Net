@@ -63,7 +63,7 @@ namespace NFT.Storage.Net
         private ConcurrentQueue<Task> Sha256Tasks = new ConcurrentQueue<Task> ();
         public async Task WaitForUploadsToFinish()
         {
-            while (UploadTasks.Count > 0 || Sha256Tasks.Count > 0)
+            while (UploadTasks.Count > 0 || Sha256Tasks.Count > 0 || UploadPackages.Count > 0 || Upload_Package.Size > 0)
             {
                 Task t;
                 bool taskRemoved = false;
@@ -95,7 +95,7 @@ namespace NFT.Storage.Net
         }
         public void StartUploads()
         {
-            UploadTasks.Enqueue(UploadTask());
+            UploadTasks.Enqueue(Task.Run(async () => UploadTask()));
         }
         SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(10);
         /// <summary>
@@ -104,7 +104,11 @@ namespace NFT.Storage.Net
         /// <returns></returns>
         private async Task UploadTask()
         {
-            if (_Client.UploadThrotteled) return;
+            if (_Client.UploadThrotteled || (Upload_Package.Size <= 0 && UploadPackages.Count <= 0))
+            {
+                return;
+            }
+
             UploadPackage toUpload = null;
             if (!UploadPackages.TryDequeue(out toUpload))
             {
@@ -121,7 +125,7 @@ namespace NFT.Storage.Net
             {
                 try
                 {
-                    NFT_File[] result = _Client.UploadMultiple(toUpload.Files.ToArray()).Result;
+                    NFT_File[] result = _Client.UploadMultiple(toUpload.Files.ToArray(),getSha256Sums: false).Result;
                     foreach (NFT_File file in result)
                     {
                         UploadedFiles.Enqueue(file);
