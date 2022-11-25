@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Collections.Concurrent;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace NFT.Storage.Net.API
@@ -9,7 +10,7 @@ namespace NFT.Storage.Net.API
         {
             return UploadMultiple(inputFiles.Files.ToArray());
         }
-        public async Task<NFT_File[]> UploadMultiple(FileInfo[] inputFiles)
+        public async Task<NFT_File[]> UploadMultiple(FileInfo[] inputFiles, bool getSha256Sums = true)
         {
             long totalByteSize = 0;
             foreach (FileInfo fi in inputFiles)
@@ -38,12 +39,29 @@ namespace NFT.Storage.Net.API
                 ClientResponse.Response decodedResponse = JsonSerializer.Deserialize<ClientResponse.Response>(responseJson);
                 // build return file
                 List<NFT_File> uploadedFiles = new List<NFT_File>();
-                for(int fileIndex = 0; fileIndex < decodedResponse.value.files.Length; fileIndex++)
+                SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(10);
+                ConcurrentQueue<Task> Sha256Tasks = new ConcurrentQueue<Task>();
+                for (int fileIndex = 0; fileIndex < decodedResponse.value.files.Length; fileIndex++)
                 {
                     NFT_File uploadedFile = new NFT_File(bulkUpload: true);
                     uploadedFile.Name = inputFiles[fileIndex].Name;
                     uploadedFile.Cid = decodedResponse.value.cid;
-                    uploadedFile.CalculateChecksum();
+                    if (getSha256Sums)
+                    {
+                        var t = Task.Run(async () =>
+                        {
+                            downloadConcurrencySemaphore.Wait();
+                            try
+                            {
+                                await uploadedFile.CalculateChecksum();
+                            }
+                            finally
+                            {
+                                downloadConcurrencySemaphore.Release();
+                            }
+                        });
+                        Sha256Tasks.Enqueue(t);
+                    }
                     uploadedFile.LocalFile = inputFiles[fileIndex];
                     string localChecksum = Sha256.GetSha256Sum(inputFiles[fileIndex]);
                     if (localChecksum != uploadedFile.Sha256Sum)
@@ -52,6 +70,7 @@ namespace NFT.Storage.Net.API
                     }
                     uploadedFiles.Add(uploadedFile);
                 }
+                Task.WaitAll(Sha256Tasks.ToArray());
                 return uploadedFiles.ToArray();
             }
         }
