@@ -98,7 +98,7 @@ namespace NFT.Storage.Net
         {
             UploadTasks.Enqueue(Task.Run(async () => UploadTask()));
         }
-        SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(40);
+        SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(GlobalVar.MaxParallelDownloads);
         /// <summary>
         /// Normally this is executed automatically if adding files (except you specify differently)
         /// </summary>
@@ -132,6 +132,7 @@ namespace NFT.Storage.Net
                         UploadedFiles.Enqueue(file);
                         var t = Task.Run(async () =>
                         {
+                            Thread.CurrentThread.Name = "sha256PipelineDownloader";
                             await downloadConcurrencySemaphore.WaitAsync();
                             try
                             {

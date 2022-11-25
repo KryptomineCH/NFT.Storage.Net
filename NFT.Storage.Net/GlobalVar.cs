@@ -6,5 +6,6 @@
         public static TimeSpan RateLimit_BacklogTimeSpan = TimeSpan.FromSeconds(10);
         public const double MaxUploadSize_MB = 100.0;
         public const int MaxFilesPerFolder = 10000;
+        public const int MaxParallelDownloads = 90;
     }
 }

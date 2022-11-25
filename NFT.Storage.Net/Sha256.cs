@@ -15,6 +15,10 @@ namespace NFT.Storage.Net
         }
         public static string GetSha256Sum(byte[] input)
         {
+            if (input == null || input.Length == 0)
+            {
+                return "";
+            }
             // Create a SHA256   
             using (SHA256 sha256Hash = SHA256.Create())
             {

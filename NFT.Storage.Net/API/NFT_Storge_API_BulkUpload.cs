@@ -39,7 +39,7 @@ namespace NFT.Storage.Net.API
                 ClientResponse.Response decodedResponse = JsonSerializer.Deserialize<ClientResponse.Response>(responseJson);
                 // build return file
                 List<NFT_File> uploadedFiles = new List<NFT_File>();
-                SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(40);
+                SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(GlobalVar.MaxParallelDownloads);
                 ConcurrentQueue<Task> Sha256Tasks = new ConcurrentQueue<Task>();
                 for (int fileIndex = 0; fileIndex < decodedResponse.value.files.Length; fileIndex++)
                 {
@@ -50,7 +50,8 @@ namespace NFT.Storage.Net.API
                     {
                         var t = Task.Run(async () =>
                         {
-                            downloadConcurrencySemaphore.Wait();
+                            Thread.CurrentThread.Name = "sha256BulkDownloader";
+                            await downloadConcurrencySemaphore.WaitAsync();
                             try
                             {
                                 await uploadedFile.CalculateChecksum();
