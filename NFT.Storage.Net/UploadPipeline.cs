@@ -60,21 +60,36 @@ namespace NFT.Storage.Net
         private ConcurrentQueue<UploadPackage> UploadPackages = new ConcurrentQueue<UploadPackage>();
         public int RunningUploads = 0;
         private ConcurrentQueue<Task> UploadTasks = new ConcurrentQueue<Task> ();
+        private ConcurrentQueue<Task> Sha256Tasks = new ConcurrentQueue<Task> ();
         public async Task WaitForUploadsToFinish()
         {
-            while (UploadTasks.Count > 0)
+            while (UploadTasks.Count > 0 || Sha256Tasks.Count > 0)
             {
                 Task t;
+                bool taskRemoved = false;
                 if (UploadTasks.TryPeek(out t))
                 {
                     if (t.IsCompleted)
                     {
-                        UploadTasks.TryDequeue(out _);
+                        if(UploadTasks.TryDequeue(out _))
+                        {
+                            taskRemoved = true;
+                        }
                     }
-                    else
+                }
+                if (Sha256Tasks.TryPeek(out t))
+                {
+                    if (t.IsCompleted)
                     {
-                        Task.Delay(50).Wait();
+                        if (Sha256Tasks.TryDequeue(out _))
+                        {
+                            taskRemoved = true;
+                        }
                     }
+                }
+                if (!taskRemoved)
+                {
+                    Task.Delay(50).Wait();
                 }
             }
         }
@@ -82,6 +97,7 @@ namespace NFT.Storage.Net
         {
             UploadTasks.Enqueue(UploadTask());
         }
+        SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(10);
         /// <summary>
         /// Normally this is executed automatically if adding files (except you specify differently)
         /// </summary>
@@ -109,6 +125,19 @@ namespace NFT.Storage.Net
                     foreach (NFT_File file in result)
                     {
                         UploadedFiles.Enqueue(file);
+                        var t = Task.Run(async () =>
+                        {
+                            downloadConcurrencySemaphore.Wait();
+                            try
+                            {
+                                await file.CalculateChecksum();
+                            }
+                            finally
+                            {
+                                downloadConcurrencySemaphore.Release();
+                            }
+                        });
+                        Sha256Tasks.Enqueue(t);
                     }
                 }
                 catch (Exception ex) when (!toUpload.Error)
