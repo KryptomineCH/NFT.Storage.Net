@@ -1,4 +1,6 @@
-﻿namespace NFT.Storage.Net
+﻿using System.Collections.Concurrent;
+
+namespace NFT.Storage.Net
 {
     public class NFT_File
     {
@@ -23,10 +25,11 @@
         }
         public string Status { get; set; }
         public string Sha256Sum { get; private set; }
-        public void CalculateChecksum()
+        public FileInfo LocalFile { get; set; }
+        public async Task CalculateChecksum()
         {
-            byte[] response = new System.Net.WebClient().DownloadData(URL);
-            Sha256Sum = Sha256.GetSha256Sum(response);
+            byte[] file = await API.DownloadClient.Download(URL);
+            Sha256Sum = Sha256.GetSha256Sum(file);
         }
     }
 }

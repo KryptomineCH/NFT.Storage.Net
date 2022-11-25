@@ -65,6 +65,13 @@ namespace NFT.Storage.Net.UnitTests
             {
                 throw new InvalidDataException($"final images: {nft_files.Length}; should be: {imageCount}!");
             }
+            for (int i = 0; i < imageCount; i++)
+            {
+                if (nft_files[i].Sha256Sum == null || nft_files[i].Sha256Sum == "")
+                {
+                    throw new InvalidDataException("ShaSum is empty!");
+                }
+            }
         }
         [Fact]
         public void TestUploadPipeline_large()

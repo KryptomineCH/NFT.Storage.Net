@@ -1,4 +1,5 @@
-﻿using System.Net.Http.Headers;
+﻿using System.Collections.Concurrent;
+using System.Net.Http.Headers;
 using System.Text.Json;
 
 namespace NFT.Storage.Net.API
@@ -9,7 +10,7 @@ namespace NFT.Storage.Net.API
         {
             return UploadMultiple(inputFiles.Files.ToArray());
         }
-        public async Task<NFT_File[]> UploadMultiple(FileInfo[] inputFiles)
+        public async Task<NFT_File[]> UploadMultiple(FileInfo[] inputFiles, bool getSha256Sums = true)
         {
             long totalByteSize = 0;
             foreach (FileInfo fi in inputFiles)
@@ -38,21 +39,43 @@ namespace NFT.Storage.Net.API
                 ClientResponse.Response decodedResponse = JsonSerializer.Deserialize<ClientResponse.Response>(responseJson);
                 // build return file
                 List<NFT_File> uploadedFiles = new List<NFT_File>();
-                for(int fileIndex = 0; fileIndex < decodedResponse.value.files.Length; fileIndex++)
+                SemaphoreSlim downloadConcurrencySemaphore = new SemaphoreSlim(GlobalVar.MaxParallelDownloads);
+                ConcurrentQueue<Task> Sha256Tasks = new ConcurrentQueue<Task>();
+                for (int fileIndex = 0; fileIndex < decodedResponse.value.files.Length; fileIndex++)
                 {
                     NFT_File uploadedFile = new NFT_File(bulkUpload: true);
                     uploadedFile.Name = inputFiles[fileIndex].Name;
-                    // link is https://bafybeibtu3ytro24zdgv4ktig3ylrf4xkf47yfj3ic5e2ttuivowwjuf7y.ipfs.nftstorage.link/TestBulkUpload0.png
-                    // !! FIXTHIS: 
                     uploadedFile.Cid = decodedResponse.value.cid;
-                    uploadedFile.CalculateChecksum();
-                    string localChecksum = Sha256.GetSha256Sum(inputFiles[fileIndex]);
-                    if (localChecksum != uploadedFile.Sha256Sum)
+                    if (getSha256Sums)
                     {
-                        throw new InvalidDataException("local checksum and checksum of uploaded File do not match!");
+                        var t = Task.Run(async () =>
+                        {
+                            Thread.CurrentThread.Name = "sha256BulkDownloader";
+                            await downloadConcurrencySemaphore.WaitAsync();
+                            try
+                            {
+                                await uploadedFile.CalculateChecksum();
+                            }
+                            catch (Exception ex)
+                            {
+                                { }
+                            }
+                            finally
+                            {
+                                downloadConcurrencySemaphore.Release();
+                            }
+                        });
+                        Sha256Tasks.Enqueue(t);
+                        string localChecksum = Sha256.GetSha256Sum(inputFiles[fileIndex]);
+                        if (localChecksum != uploadedFile.Sha256Sum)
+                        {
+                            throw new InvalidDataException("local checksum and checksum of uploaded File do not match!");
+                        }
                     }
+                    uploadedFile.LocalFile = inputFiles[fileIndex];
                     uploadedFiles.Add(uploadedFile);
                 }
+                Task.WaitAll(Sha256Tasks.ToArray());
                 return uploadedFiles.ToArray();
             }
         }
