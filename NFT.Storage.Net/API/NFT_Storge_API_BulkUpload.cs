@@ -42,10 +42,9 @@ namespace NFT.Storage.Net.API
                 {
                     NFT_File uploadedFile = new NFT_File(bulkUpload: true);
                     uploadedFile.Name = inputFiles[fileIndex].Name;
-                    // link is https://bafybeibtu3ytro24zdgv4ktig3ylrf4xkf47yfj3ic5e2ttuivowwjuf7y.ipfs.nftstorage.link/TestBulkUpload0.png
-                    // !! FIXTHIS: 
                     uploadedFile.Cid = decodedResponse.value.cid;
                     uploadedFile.CalculateChecksum();
+                    uploadedFile.LocalFile = inputFiles[fileIndex];
                     string localChecksum = Sha256.GetSha256Sum(inputFiles[fileIndex]);
                     if (localChecksum != uploadedFile.Sha256Sum)
                     {

@@ -78,6 +78,7 @@ namespace NFT.Storage.Net.API
             {
                 NFT_File file = Upload(fs).Result;
                 file.Name = localFile.Name;
+                file.LocalFile = localFile;
                 if (checksum != file.Sha256Sum)
                 {
                     throw new InvalidDataException("checksum invalid!");
