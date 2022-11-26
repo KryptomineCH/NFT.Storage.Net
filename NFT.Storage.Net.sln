@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFT.Storage.Net", "NFT.Stor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFT.Storage.Net.UnitTests", "NFT.Storage.Net.UnitTests\NFT.Storage.Net.UnitTests.csproj", "{0FED3D59-5AA8-42E4-AC22-AB85126AD2D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NFT.Rtorage.Net.PerformanceProfiling", "NFT.Rtorage.Net.PerformanceProfiling\NFT.Rtorage.Net.PerformanceProfiling.csproj", "{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFT.Storage.Net.PerformanceProfiling", "NFT.Rtorage.Net.PerformanceProfiling\NFT.Storage.Net.PerformanceProfiling.csproj", "{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
