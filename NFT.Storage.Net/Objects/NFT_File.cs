@@ -28,7 +28,7 @@ namespace NFT.Storage.Net
         public FileInfo LocalFile { get; set; }
         public async Task CalculateChecksum()
         {
-            byte[] file = await API.DownloadClient.Download(URL);
+            byte[] file = await API.DownloadClient.DownloadAsync(URL);
             Sha256Sum = Sha256.GetSha256Sum(file);
         }
     }
