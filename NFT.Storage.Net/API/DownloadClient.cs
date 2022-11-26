@@ -2,7 +2,7 @@
 
 namespace NFT.Storage.Net.API
 {
-    internal static class DownloadClient
+    public static class DownloadClient
     {
         static DownloadClient()
         {
@@ -21,7 +21,7 @@ namespace NFT.Storage.Net.API
             _Client.DefaultRequestHeaders.ConnectionClose = false;
         }
         private static HttpClient _Client;
-        internal static async Task<byte[]> Download(string url)
+        public static async Task<byte[]> Download(string url)
         {
             for (int retries = 0; retries < 3; retries++)
             {
