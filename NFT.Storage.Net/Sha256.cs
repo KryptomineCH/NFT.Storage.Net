@@ -13,6 +13,34 @@ namespace NFT.Storage.Net
         {
             return GetSha256Sum(File.ReadAllBytes(fileInfo.FullName));
         }
+        public static string ValidateChecksums(Uri[] links)
+        {
+            string[] checksums = new string[links.Length];
+            // download files in parallel
+            Task<byte[]>[] downloadTasks = new Task<byte[]>[links.Length];
+            for (int i = 0; i < links.Length; i++)
+            {
+                downloadTasks[i] = API.DownloadClient.Download(links[i].ToString());
+            }
+            Task.WaitAll(downloadTasks);
+            // generate checksums
+            for (int i = 0; i < links.Length; i++)
+            {
+                byte[] file = downloadTasks[i].Result;
+                checksums[i] = Sha256.GetSha256Sum(file);
+            }
+            // make sure all checksums are equal
+            for (int i = 1; i < checksums.Length; i++)
+            {
+                if (checksums[0] != checksums[i])
+                {
+                    throw new InvalidDataException($"Checksums of the following files do not match! {Environment.NewLine}" +
+                        $"{links[0]} {Environment.NewLine} " +
+                        $"{links[i]}");
+                }
+            }
+            return checksums[0];
+        }
         public static string GetSha256Sum(byte[] input)
         {
             if (input == null || input.Length == 0)
