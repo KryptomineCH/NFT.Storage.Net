@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFT.Storage.Net", "NFT.Stor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFT.Storage.Net.UnitTests", "NFT.Storage.Net.UnitTests\NFT.Storage.Net.UnitTests.csproj", "{0FED3D59-5AA8-42E4-AC22-AB85126AD2D6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFT.Storage.Net.PerformanceProfiling", "NFT.Rtorage.Net.PerformanceProfiling\NFT.Storage.Net.PerformanceProfiling.csproj", "{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NFT.Storage.Net.PerformanceProfiling", "NFT.Storage.Net.PerformanceProfiling\NFT.Storage.Net.PerformanceProfiling.csproj", "{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +33,14 @@ Global
 		{0FED3D59-5AA8-42E4-AC22-AB85126AD2D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0FED3D59-5AA8-42E4-AC22-AB85126AD2D6}.Release|x64.ActiveCfg = Release|x64
 		{0FED3D59-5AA8-42E4-AC22-AB85126AD2D6}.Release|x64.Build.0 = Release|x64
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Debug|x64.Build.0 = Debug|Any CPU
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Release|x64.ActiveCfg = Release|Any CPU
-		{21A8C092-8EF4-4E0D-BC4A-6D9111DE267E}.Release|x64.Build.0 = Release|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Debug|x64.Build.0 = Debug|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Release|x64.ActiveCfg = Release|Any CPU
+		{D704CF9B-0280-45BE-B95B-4B7AA8B421C8}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
