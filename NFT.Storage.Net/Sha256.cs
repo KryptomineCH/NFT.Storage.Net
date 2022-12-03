@@ -39,7 +39,8 @@ namespace NFT.Storage.Net
             Task<byte[]>[] downloadTasks = new Task<byte[]>[links.Length];
             for (int i = 0; i < links.Length; i++)
             {
-                downloadTasks[i] = API.DownloadClient.DownloadAsync(links[i].ToString());
+                string link = links[i].ToString();
+                downloadTasks[i] = Task.Run(() => API.DownloadClient.DownloadAsync(link));
             }
             Task.WaitAll(downloadTasks);
             // generate checksums
