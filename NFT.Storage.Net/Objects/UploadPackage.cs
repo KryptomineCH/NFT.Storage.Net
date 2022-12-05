@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace NFT.Storage.Net
 {
+    /// <summary>
+    /// an upload package is a list of files which should be uploaded in one go. <br/>
+    /// this is a lot faster than uploading many single files. UploadPipeline uses this class and tries to pack as many files as possible into one upload package
+    /// </summary>
     internal class UploadPackage
     { 
         public UploadPackage()

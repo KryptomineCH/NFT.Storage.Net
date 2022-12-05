@@ -1,5 +1,8 @@
 ﻿namespace NFT.Storage.Net
 {
+    /// <summary>
+    /// Contains several library wide variables, eg settings
+    /// </summary>
     internal static class GlobalVar
     {
         public const int RateLimit_MaxRequests = 30;

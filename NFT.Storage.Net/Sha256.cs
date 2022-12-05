@@ -3,16 +3,35 @@ using System.Text;
 
 namespace NFT.Storage.Net
 {
+    /// <summary>
+    /// this class is used to generate a sha256checksum of a file or byte stream. <br/>
+    /// Can also fetch a file from a url and validate its checksum
+    /// </summary>
     public class Sha256
     {
+        /// <summary>
+        /// generates a checksum from the specified local file
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         public static string GetSha256Sum(string  path)
         {
             return GetSha256Sum(new FileInfo(path));
         }
+        /// <summary>
+        /// generates a checksum from the specified local file
+        /// </summary>
+        /// <param name="fileInfo"></param>
+        /// <returns></returns>
         public static string GetSha256Sum(FileInfo fileInfo)
         {
             return GetSha256Sum(File.ReadAllBytes(fileInfo.FullName));
         }
+        /// <summary>
+        /// generates a checksum from the specified online webaddress (downloads the file into memory)
+        /// </summary>
+        /// <param name="link"></param>
+        /// <returns></returns>
         public static string GetSha256Sum(Uri link)
         {
 
@@ -22,6 +41,11 @@ namespace NFT.Storage.Net
             downloadedFile.Wait();
             return GetSha256Sum(downloadedFile.Result);
         }
+        /// <summary>
+        /// takes multiple weblinks and verifies if the file are equal
+        /// </summary>
+        /// <param name="links"></param>
+        /// <returns></returns>
         public static string ValidateChecksums(string[] links)
         {
             List<Uri> adresses = new List<Uri>();
@@ -31,8 +55,13 @@ namespace NFT.Storage.Net
             }
             return ValidateChecksums(adresses.ToArray());
         }
-
-            public static string ValidateChecksums(Uri[] links)
+        /// <summary>
+        /// takes multiple weblinks and verifies if the file are equal
+        /// </summary>
+        /// <param name="links"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidDataException"></exception>
+        public static string ValidateChecksums(Uri[] links)
         {
             string[] checksums = new string[links.Length];
             // download files in parallel
@@ -61,6 +90,11 @@ namespace NFT.Storage.Net
             }
             return checksums[0];
         }
+        /// <summary>
+        /// The other methods generate byte arrays from the input methods (url, file, link) and pass it to this function
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public static string GetSha256Sum(byte[] input)
         {
             if (input == null || input.Length == 0)

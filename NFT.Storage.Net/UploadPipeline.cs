@@ -13,6 +13,11 @@ namespace NFT.Storage.Net
             _Client = new API.NFT_Storage_API(apiKey);
         }
         private API.NFT_Storage_API _Client; 
+        /// <summary>
+        /// adds files to the upload queue. They will be uploaded automatically
+        /// </summary>
+        /// <param name="files"></param>
+        /// <param name="startUploads"></param>
         public void AddFilesToUploadQueue(FileInfo[] files,bool startUploads = true)
         {
             foreach(FileInfo file in files)
@@ -24,6 +29,13 @@ namespace NFT.Storage.Net
                 StartUploads();
             }
         }
+        /// <summary>
+        /// add a single file to the upload queue. The queue will be processed automatically
+        /// </summary>
+        /// <param name="file"></param>
+        /// <param name="startUploads"></param>
+        /// <param name="startOnlyWhenPackageIsFull"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public void AddFilesToUploadQueue(FileInfo file, bool startUploads = true, bool startOnlyWhenPackageIsFull = false)
         {
             if ( file.Length * 0.000001 > GlobalVar.MaxUploadSize_MB)
@@ -61,6 +73,10 @@ namespace NFT.Storage.Net
         public int RunningUploads = 0;
         private ConcurrentQueue<Task> UploadTasks = new ConcurrentQueue<Task> ();
         private ConcurrentQueue<Task> Sha256Tasks = new ConcurrentQueue<Task> ();
+        /// <summary>
+        /// creates a task which completes when the upload queue is fully worked through
+        /// </summary>
+        /// <returns></returns>
         public async Task WaitForUploadsToFinish()
         {
             while (UploadTasks.Count > 0 || Sha256Tasks.Count > 0 || UploadPackages.Count > 0 || Upload_Package.Size > 0)
@@ -94,6 +110,12 @@ namespace NFT.Storage.Net
             }
             { }
         }
+        /// <summary>
+        /// starts a task which monitors the uploat queue and automatically uploads the files. Multiple workeys may be started.
+        /// </summary>
+        /// <remarks>
+        /// workers are disposed when the upload queue is finished
+        /// </remarks>
         public void StartUploads()
         {
             UploadTasks.Enqueue(Task.Run(async () => UploadTask()));
