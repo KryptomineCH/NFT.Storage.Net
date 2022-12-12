@@ -21,6 +21,18 @@ namespace NFT.Storage.Net.API
             _Client.DefaultRequestHeaders.ConnectionClose = false;
         }
         private static HttpClient _Client;
+        public static byte[] DownloadSync(Uri url)
+        {
+            Task<byte[]> data = Task.Run(() => DownloadClient.DownloadAsync(url));
+            data.Wait();
+            return data.Result;
+        }
+        public static byte[] DownloadSync(string url)
+        {
+            Task<byte[]> data = Task.Run(() => DownloadClient.DownloadAsync(url));
+            data.Wait();
+            return data.Result;
+        }
         public static async Task<byte[]> DownloadAsync(Uri url)
         {
             return await DownloadAsync(url.ToString());
