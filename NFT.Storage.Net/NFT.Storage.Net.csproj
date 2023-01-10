@@ -1,27 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU;x64</Platforms>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>nft.storage interaction library for .net</Title>
-    <Authors>Kryptomine.ch</Authors>
-    <Description>c# Library to interact with nft.storage</Description>
-    <Copyright>Kryptomine.ch</Copyright>
+    <Authors>KryptoMine.ch</Authors>
+    <Description>The c# nft.storage API library is a convenient tool for uploading and downloading files to nft.storage. With just a few simple lines of code, you can easily manage your NFT assets and interact with the nft.storage platform. This library makes it easy to integrate nft.storage into your project and take advantage of its powerful file storage capabilities.</Description>
+    <Copyright>KryptoMine.ch</Copyright>
     <RepositoryUrl>https://github.com/KryptomineCH/NFT.Storage.Net</RepositoryUrl>
     <PackageProjectUrl>https://github.com/KryptomineCH/NFT.Storage.Net</PackageProjectUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageTags>nft, storage, upload, download, api</PackageTags>
+    <PackageTags>nft;storage;upload;download;api;nft.storage</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>c# library to easily upload files to NFT.Storage.
-
-loads files directly into your account and returns a readable .net object</PackageReleaseNotes>
+    <PackageReleaseNotes>updated nuget metadata</PackageReleaseNotes>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
-    <Version>$(VersionPrefix)</Version>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Version>1.0.0.1</Version>
+    <PackageLicenseExpression>MIT-Modern-Variant</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
