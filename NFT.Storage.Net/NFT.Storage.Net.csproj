@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFrameworks>net7.0;net6.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Platforms>AnyCPU;x64</Platforms>
@@ -15,10 +15,10 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>nft;storage;upload;download;api;nft.storage</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>updated nuget metadata</PackageReleaseNotes>
+    <PackageReleaseNotes>- download manager can now report progress (async methods)</PackageReleaseNotes>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.0.2</Version>
     <PackageLicenseExpression>MIT-Modern-Variant</PackageLicenseExpression>
   </PropertyGroup>
 
