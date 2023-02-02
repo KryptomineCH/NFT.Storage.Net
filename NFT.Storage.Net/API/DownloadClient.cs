@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿using System;
+using System.Diagnostics;
+using System.Net;
+using System.Threading;
 
 namespace NFT.Storage.Net.API
 {
@@ -33,18 +36,17 @@ namespace NFT.Storage.Net.API
             data.Wait();
             return data.Result;
         }
-        public static async Task<byte[]> DownloadAsync(Uri url)
+        public static async Task<byte[]> DownloadAsync(Uri url, IProgress<float> progress = null, CancellationToken cancellationToken = default)
         {
-            return await DownloadAsync(url.ToString());
+            return await DownloadAsync(url.ToString(), progress,cancellationToken);
         }
-        public static async Task<byte[]> DownloadAsync(string url)
+        public static async Task<byte[]> DownloadAsync(string url, IProgress<float> progress = null, CancellationToken cancellationToken = default)
         {
             for (int retries = 0; retries < 3; retries++)
             {
-                HttpResponseMessage response = await _Client.GetAsync(url);
                 try
                 {
-                    response.EnsureSuccessStatusCode();
+                    return await _Client.DownloadToMemoryAsync(url, progress, cancellationToken);
                 }
                 catch (Exception ex) when (false)
                 {
@@ -57,10 +59,7 @@ namespace NFT.Storage.Net.API
                     { }
                     await Task.Delay(50);
                     continue;
-                }
-                System.Net.Http.HttpContent content = response.Content;
-                byte[] file = await content.ReadAsByteArrayAsync();
-                return file;
+                }                   
             }
             throw new HttpRequestException("File Download failed!");
         }
