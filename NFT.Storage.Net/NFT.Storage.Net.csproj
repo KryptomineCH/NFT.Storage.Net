@@ -15,10 +15,12 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageTags>nft;storage;upload;download;api;nft.storage</PackageTags>
     <PackageIcon>icon.png</PackageIcon>
-    <PackageReleaseNotes>updated nuget metadata</PackageReleaseNotes>
+    <PackageReleaseNotes>- file download now supports progress update for processes
+- improved async behaviour
+- added support for .net 6</PackageReleaseNotes>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
-    <Version>1.0.0.1</Version>
+    <Version>1.0.1</Version>
     <PackageLicenseExpression>MIT-Modern-Variant</PackageLicenseExpression>
   </PropertyGroup>
 
