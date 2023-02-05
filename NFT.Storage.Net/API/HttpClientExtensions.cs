@@ -11,7 +11,10 @@
 
                 using (var download = await response.Content.ReadAsStreamAsync())
                 {
-                    var relativeProgress = new Progress<long>(totalBytes => progress.Report((float)totalBytes / contentLength.Value));
+                    if (progress != null)
+                    {
+                        var relativeProgress = new Progress<long>(totalBytes => progress.Report((float)totalBytes / contentLength.Value));
+                    }
                     return await download.ToArrayAsync(contentLength,relativeProgress, cancellationToken);
                 }
             }
@@ -86,7 +89,10 @@
                     destinationIndex: totalBytesRead, 
                     length:  bytesRead);
                 totalBytesRead += bytesRead;
-                progress?.Report(totalBytesRead);
+                if (progress != null)
+                {
+                    progress?.Report(totalBytesRead);
+                }
             }
             return array;
         }
