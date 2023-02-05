@@ -14,8 +14,12 @@
                     if (progress != null)
                     {
                         var relativeProgress = new Progress<long>(totalBytes => progress.Report((float)totalBytes / contentLength.Value));
+                        return await download.ToArrayAsync(contentLength, relativeProgress, cancellationToken);
                     }
-                    return await download.ToArrayAsync(contentLength,relativeProgress, cancellationToken);
+                    else
+                    {
+                        return await download.ToArrayAsync(contentLength, null, cancellationToken);
+                    }
                 }
             }
         }
